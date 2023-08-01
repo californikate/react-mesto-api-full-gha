@@ -3,6 +3,12 @@ const router = require('express').Router();
 const { LINK_REGEX } = require('../utils/const');
 const { postUser, login } = require('../controllers/users');
 
+router.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
 router.post(
   '/signup',
   celebrate({
