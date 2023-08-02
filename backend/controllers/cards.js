@@ -5,7 +5,7 @@ const NotFoundError = require('../errors/NotFoundError');
 
 const getCards = (req, res, next) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch(next);
 };
 
@@ -13,7 +13,7 @@ const postCard = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(201).send(card))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании карточки'));
@@ -30,7 +30,7 @@ const deleteCard = (req, res, next) => {
     .orFail(() => next(new NotFoundError('Карточка с указанным id не найдена')))
     .then((card) => {
       if (card.owner.toString() === req.user._id) {
-        Card.deleteOne(card).then(() => res.send({ data: card }));
+        Card.deleteOne(card).then(() => res.send(card));
       } else {
         next(new ForbiddenError('Невозможно удалить карточку другого пользователя'));
       }
@@ -55,7 +55,7 @@ const putLike = (req, res, next) => {
     { new: true },
   )
     .orFail(() => next(new NotFoundError('Карточка с указанным id не найдена')))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'NotFoundError') {
         next(new NotFoundError('Передан несуществующий id карточки'));
@@ -76,7 +76,7 @@ const deleteLike = (req, res, next) => {
     { new: true },
   )
     .orFail(() => next(new NotFoundError('Карточка с указанным id не найдена')))
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send(card))
     .catch((err) => {
       if (err.name === 'NotFoundError') {
         next(new NotFoundError('Передан несуществующий id карточки'));

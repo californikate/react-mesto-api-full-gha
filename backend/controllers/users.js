@@ -8,7 +8,7 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send({ users }))
+    .then((users) => res.send(users))
     .catch(next);
 };
 
@@ -17,7 +17,7 @@ const getUser = (req, res, next) => {
 
   User.findById(userId)
     .orFail(() => next(new NotFoundError('Пользователь по указанному id не найден')))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -30,7 +30,7 @@ const getUser = (req, res, next) => {
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => next(new NotFoundError('Пользователь по указанному id не найден')))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'CastError') {
         next(new BadRequestError('Переданы некорректные данные'));
@@ -82,7 +82,7 @@ const updateUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true, runValidators: true })
     .orFail(() => next(new NotFoundError('Пользователь с указанным id не найден')))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
@@ -97,7 +97,7 @@ const updateUserAvatar = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true, runValidators: true })
     .orFail(() => next(new NotFoundError('Пользователь с указанным id не найден')))
-    .then((user) => res.send({ user }))
+    .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при обновлении профиля'));
@@ -118,7 +118,7 @@ const login = (req, res, next) => {
         { expiresIn: '7d' },
       );
 
-      res.send({ token });
+      res.status(200).send({ token });
     })
     .catch((err) => {
       next(new UnauthorizedError(err.message));
